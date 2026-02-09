@@ -22,10 +22,10 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<User> create(@Valid @RequestBody CreateUserRequest request) {
+    public ResponseEntity<UserResponse> create(@Valid @RequestBody CreateUserRequest request) {
 
         User created = userService.create(request.getEmail(), request.getName());
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(created));
     }
 
     @GetMapping("/{id}")
