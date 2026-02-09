@@ -1,6 +1,7 @@
 package com.alessandro.backend.order_management.service;
 
 import com.alessandro.backend.order_management.entity.User;
+import com.alessandro.backend.order_management.exception.DuplicateEmailException;
 import com.alessandro.backend.order_management.exception.UserNotFoundException;
 import com.alessandro.backend.order_management.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,9 @@ public class UserService {
     }
 
     public User create(String email, String name){
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new DuplicateEmailException(email);
+        }
         User user = new User(email, name);
         return userRepository.save(user);
     }
