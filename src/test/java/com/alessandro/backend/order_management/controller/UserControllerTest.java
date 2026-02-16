@@ -43,6 +43,28 @@ public class UserControllerTest {
     }
 
     @Test
+    void listUsers_shouldReturnPagedResponse() throws Exception {
+
+        for (int i = 1; i <= 12; i++) {
+            Map<String, String> req = Map.of(
+                    "email", "u"+i+"@test.com",
+                    "name", "User "+i
+            );
+            mockMvc.perform(post("/users").
+                        contentType(MediaType.APPLICATION_JSON).
+                        content(objectMapper.writeValueAsString(req)))
+                    .andExpect(status().isCreated());
+        }
+        mockMvc.perform(get("/users?page=0&size=10&sort=id,asc")).
+                andExpect(status().isOk()).
+                andExpect(jsonPath("$.items").isArray()).
+                andExpect(jsonPath("$.items.length()").value(10)).
+                andExpect(jsonPath("$.page").value(0)).
+                andExpect(jsonPath("$.size").value(10)).
+                andExpect(jsonPath("$.totalItems").value(12));
+    }
+
+    @Test
     void createUser_invalidInput_shouldReturn400() throws Exception {
         Map<String, String> request = Map.of(
                 "email", "",

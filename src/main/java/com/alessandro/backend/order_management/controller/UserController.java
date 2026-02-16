@@ -1,14 +1,18 @@
 package com.alessandro.backend.order_management.controller;
 
 import com.alessandro.backend.order_management.dto.CreateUserRequest;
+import com.alessandro.backend.order_management.dto.PagedResponse;
 import com.alessandro.backend.order_management.dto.UserResponse;
 import com.alessandro.backend.order_management.entity.User;
 import com.alessandro.backend.order_management.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -26,6 +30,15 @@ public class UserController {
 
         User created = userService.create(request.getEmail(), request.getName());
         return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(created));
+    }
+
+    @GetMapping
+    public ResponseEntity<PagedResponse<UserResponse>> list(Pageable pageable) {
+        Page<User> page = userService.list(pageable);
+        List<UserResponse> items = page.getContent().stream().map(this::toResponse).toList();
+        PagedResponse<UserResponse> body = new PagedResponse<>(items, page.getNumber(), page.getSize(),
+                page.getTotalElements(), page.getTotalPages(), page.hasNext(), page.hasPrevious());
+        return ResponseEntity.ok(body);
     }
 
     @GetMapping("/{id}")
