@@ -65,6 +65,25 @@ public class UserControllerTest {
     }
 
     @Test
+    void listUsers_sizeToLarge_shouldBeClamped() throws Exception {
+        for (int i = 1; i <=60 ; i++) {
+            Map<String, String> req = Map.of(
+                    "email", "u"+i+"@test.com",
+                    "name", "User "+i
+            );
+            mockMvc.perform(post("/users").
+                        contentType(MediaType.APPLICATION_JSON).
+                        content(objectMapper.writeValueAsString(req))).
+                    andExpect(status().isCreated());
+        }
+
+        mockMvc.perform(get("/users?page=0&size=100")).
+                andExpect(status().isOk()).
+                andExpect(jsonPath("$.items.length()").value(50)).
+                andExpect(jsonPath("$.size").value(50));
+    }
+
+    @Test
     void createUser_invalidInput_shouldReturn400() throws Exception {
         Map<String, String> request = Map.of(
                 "email", "",

@@ -5,6 +5,7 @@ import com.alessandro.backend.order_management.exception.DuplicateEmailException
 import com.alessandro.backend.order_management.exception.UserNotFoundException;
 import com.alessandro.backend.order_management.repository.UserRepository;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +32,13 @@ public class UserService {
     }
 
     public Page<User> list(Pageable pageable) {
-        return userRepository.findAll(pageable);
+        Pageable safe = clampPageable(pageable);
+        return userRepository.findAll(safe);
+    }
+
+    private Pageable clampPageable(Pageable pageable) {
+        int maxSize = 50;
+        int size = Math.min(pageable.getPageSize(), maxSize);
+        return PageRequest.of(pageable.getPageNumber(), size, pageable.getSort());
     }
 }
