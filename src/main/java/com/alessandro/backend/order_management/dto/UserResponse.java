@@ -6,7 +6,7 @@ public class UserResponse {
     private String name;
     private String email;
 
-    public UserResponse(Long id, String name, String email) {
+    public UserResponse(Long id, String email, String name) {
         this.id = id;
         this.name = name;
         this.email = email;

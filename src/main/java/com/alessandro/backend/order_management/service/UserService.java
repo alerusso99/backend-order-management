@@ -19,7 +19,7 @@ public class UserService {
     }
 
     public User create(String email, String name){
-        if (userRepository.findByEmail(email).isPresent()) {
+        if (userRepository.existsByEmail(email)){
             throw new DuplicateEmailException(email);
         }
         User user = new User(email, name);
