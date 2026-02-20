@@ -12,11 +12,16 @@ public class SecurityUsersConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        UserDetails user = User.withUsername("admin")
-                .password("{noop}admin") // solo per dev
+        UserDetails admin = User.withUsername("admin")
+                .password("{noop}admin")
                 .roles("ADMIN")
                 .build();
 
-        return new InMemoryUserDetailsManager(user);
+        UserDetails user = User.withUsername("user")
+                .password("{noop}user")
+                .roles("USER")
+                .build();
+
+        return new InMemoryUserDetailsManager(admin, user);
     }
 }
