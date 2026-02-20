@@ -33,7 +33,7 @@ public class UserServiceTest {
         String email = "mario@test.com";
         String name = "Mario";
 
-        when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
+        when(userRepository.existsByEmail(email)).thenReturn(false);
         when(userRepository.save(any(User.class))).thenAnswer(inv -> inv.getArgument(0));
 
         User created = userService.create(email, name);
@@ -47,7 +47,7 @@ public class UserServiceTest {
         assertThat(saved.getEmail()).isEqualTo(email);
         assertThat(saved.getName()).isEqualTo(name);
 
-        verify(userRepository).findByEmail(email);
+        verify(userRepository).existsByEmail(email);
         verifyNoMoreInteractions(userRepository);
 
     }
@@ -55,13 +55,13 @@ public class UserServiceTest {
     @Test
     void crate_whenEmailAlreadyExists_shouldThrowAndNotSave() {
         String email = "dup@test.com";
-        when(userRepository.findByEmail(email)).thenReturn(Optional.of(mock(User.class)));
+        when(userRepository.existsByEmail(email)).thenReturn(true);
 
         assertThatThrownBy(() -> userService.create(email, "Mario"))
                 .isInstanceOf(DuplicateEmailException.class)
                 .hasMessageContaining(email);
 
-        verify(userRepository).findByEmail(email);
+        verify(userRepository).existsByEmail(email);
         verify(userRepository, never()).save(any());
         verifyNoMoreInteractions(userRepository);
     }
