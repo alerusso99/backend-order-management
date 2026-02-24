@@ -24,7 +24,8 @@ spring:
 security:
   jwt:
     secret: ",c)TKr=MLwj0JEMcnb-(^24AtkMZAn=S"
-    expiration-minutes: 60
+    access-expiration-minutes: 1
+    refresh-expiration-days: 30
 
 logging:
   level:
